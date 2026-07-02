@@ -1,0 +1,19 @@
+Pan-Cancer Molecular Classifier — Results
+==================================================
+Cancer types: ['BRCA', 'COAD', 'LUAD']
+Patients: 2098
+Features: 187
+Model: XGBoost (5-fold StratifiedKFold CV)
+
+Accuracy:  0.900
+Macro F1:  0.897
+
+              precision    recall  f1-score   support
+
+        BRCA       0.87      0.95      0.91      1009
+        COAD       0.94      0.92      0.93       528
+        LUAD       0.93      0.79      0.85       561
+
+    accuracy                           0.90      2098
+   macro avg       0.91      0.89      0.90      2098
+weighted avg       0.90      0.90      0.90      2098
