@@ -4,7 +4,7 @@
 
 **A machine-learning engine that infers a cancer's tissue of origin from somatic mutations alone — built to tackle the Cancer-of-Unknown-Primary problem.**
 
-<sub>A case study by **Aikym Inc.** — computational biology, built to a scientific standard. · [Interactive case-study page](https://claude.ai/code/artifact/a904842a-efc3-4fa2-b79e-ba9a18752f77)</sub>
+<sub>A case study by **Aikyam Inc.** — computational biology, built to a scientific standard. · [Interactive case-study page](https://claude.ai/code/artifact/a904842a-efc3-4fa2-b79e-ba9a18752f77)</sub>
 
 ---
 
@@ -164,8 +164,8 @@ See [RESULTS_AND_DISCUSSION.md](RESULTS_AND_DISCUSSION.md) for the full scientif
 
 ---
 
-### About Aikym Inc.
+### About Aikyam Inc.
 
-**Aikym Inc.** is a computational-biology consultancy spanning cancer genomics, ML & genomic foundation models, drug discovery, and protein science. OncoOrigin is one case study — real data, interpretable models, honest limits.
+**Aikyam Inc.** is a computational-biology consultancy spanning cancer genomics, ML & genomic foundation models, drug discovery, and protein science. OncoOrigin is one case study — real data, interpretable models, honest limits.
 
 📫 [shilvaru@gmail.com](mailto:shilvaru@gmail.com) · [github.com/shilpasy](https://github.com/shilpasy)
