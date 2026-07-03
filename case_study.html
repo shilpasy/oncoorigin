@@ -163,6 +163,29 @@
   .method .m-k{font-family:var(--mono); font-size:11px; letter-spacing:.12em; text-transform:uppercase; color:var(--cyan);}
   .method .m-v{font-size:14.5px; color:var(--ink-2);}
 
+  /* input data */
+  .data-panel{display:grid; grid-template-columns:1.08fr .92fr; gap:16px; margin-top:26px;}
+  .provenance{background:var(--surface); border:1px solid var(--hairline); border-radius:14px; padding:22px 26px;}
+  .prov-row{display:flex; gap:16px; padding:11px 0; border-top:1px solid var(--hairline); font-size:15px;}
+  .prov-row:first-child{border-top:0;}
+  .prov-row .pk{font-family:var(--mono); font-size:11.5px; letter-spacing:.1em; text-transform:uppercase; color:var(--cyan); min-width:70px; padding-top:2px;}
+  .prov-row .pv{color:var(--ink-2);}
+  .cohort-chips{display:flex; gap:8px; flex-wrap:wrap; margin-top:18px;}
+  .cchip{font-family:var(--mono); font-size:12.5px; padding:5px 12px; border-radius:8px; color:var(--ink); border:1px solid var(--c); display:flex; align-items:center; gap:8px;}
+  .cchip::before{content:""; width:8px; height:8px; border-radius:50%; background:var(--c);}
+  .record{background:linear-gradient(180deg,var(--ground-2),var(--surface)); border:1px solid var(--hairline-2); border-radius:14px; padding:22px 24px; font-family:var(--mono);}
+  .rec-head{font-size:11px; letter-spacing:.13em; text-transform:uppercase; color:var(--faint); margin-bottom:16px;}
+  .rec-grid{display:grid; grid-template-columns:auto 1fr; gap:9px 18px; font-size:14px;}
+  .rec-grid .rk{color:var(--muted);}
+  .rec-grid .rv{color:var(--ink-2);}
+  .rec-grid .rv.hl{color:var(--cyan); font-weight:600;}
+  .rec-note{margin-top:16px; padding-top:14px; border-top:1px dashed var(--hairline-2); font-size:12.5px; color:var(--faint);}
+  .pipeline{display:flex; flex-wrap:wrap; align-items:center; gap:9px; margin-top:22px; padding:15px 18px; background:var(--ground-2); border:1px solid var(--hairline); border-radius:12px;}
+  .pstep{font-family:var(--mono); font-size:12.5px; color:var(--ink-2); background:var(--surface); border:1px solid var(--hairline-2); padding:6px 11px; border-radius:7px;}
+  .parr{color:var(--cyan); font-family:var(--mono); font-weight:700;}
+  .build-note{font-size:15px; color:var(--muted); margin-top:16px;}
+  .build-note .mono{color:var(--ink-2); font-size:13px; background:var(--ground-2); padding:2px 7px; border-radius:5px; border:1px solid var(--hairline);}
+
   /* honesty */
   .honesty{display:grid; grid-template-columns:1fr 1fr; gap:14px 34px; margin-top:8px;}
   .hrow{display:flex; gap:13px; align-items:flex-start; padding:14px 0; border-top:1px solid var(--hairline);}
@@ -177,12 +200,17 @@
   .foot-links{display:flex; gap:26px; flex-wrap:wrap; margin-top:26px; font-family:var(--mono); font-size:14px;}
   .foot-links a{display:flex; gap:8px; align-items:center;}
   .disclaimer{color:var(--faint); font-size:13px; margin-top:40px; max-width:70ch; line-height:1.55;}
+  .aikym-mark{display:flex; align-items:center; gap:11px; margin-bottom:22px;}
+  .aikym-glyph{color:var(--cyan); font-size:20px; transform:translateY(1px);}
+  .aikym-name{font-size:20px; font-weight:800; letter-spacing:.02em; color:var(--ink);}
+  .aikym-inc{color:var(--muted); font-weight:500; letter-spacing:.04em;}
 
   @media (max-width:820px){
     .stats{grid-template-columns:1fr 1fr;}
     .layers{grid-template-columns:1fr;}
     .results-grid{grid-template-columns:1fr;}
     .honesty{grid-template-columns:1fr;}
+    .data-panel{grid-template-columns:1fr;}
     .hero{padding-top:64px;}
   }
   /* reveal */
@@ -227,6 +255,51 @@
         <div class="big">In <em>3–5%</em> of metastatic cancers, the tumour is found but its primary site cannot be identified.</div>
         <p style="margin:0; font-size:17px;">This is Cancer of Unknown Primary (CUP). Because nearly every therapy is chosen by tissue of origin, these patients are treated half-blind — and CUP carries among the worst outcomes in oncology. The one datum always in hand is the tumour's DNA. OncoOrigin turns that DNA into an answer.</p>
       </div>
+    </div>
+  </section>
+
+  <!-- ============ INPUT DATA ============ -->
+  <section class="reveal">
+    <div class="col">
+      <div class="kicker"><span class="bar"></span><span class="eyebrow">The input data</span></div>
+      <h2>Real tumours. Public data. Every figure traces to a mutation call.</h2>
+      <p class="lead">The substrate is the TCGA PanCancer Atlas — de-identified whole-exome somatic mutations from real patient tumours, pulled live from the cBioPortal public API. Nothing here is simulated.</p>
+
+      <div class="data-panel">
+        <div class="provenance">
+          <div class="prov-row"><span class="pk">Source</span><span class="pv">TCGA PanCancer Atlas 2018, via the cBioPortal public REST API</span></div>
+          <div class="prov-row"><span class="pk">Assay</span><span class="pv">Whole-exome somatic mutation calls (MAF-format variants)</span></div>
+          <div class="prov-row"><span class="pk">Build</span><span class="pv">GRCh37 — trinucleotide context fetched from Ensembl</span></div>
+          <div class="prov-row"><span class="pk">Scale</span><span class="pv tnum">2,098 patients · 450,107 somatic mutations</span></div>
+          <div class="cohort-chips">
+            <span class="cchip" style="--c:var(--breast)">Breast · 1,009</span>
+            <span class="cchip" style="--c:var(--lung)">Lung · 561</span>
+            <span class="cchip" style="--c:var(--colon)">Colorectal · 528</span>
+          </div>
+        </div>
+        <div class="record">
+          <div class="rec-head">One input record · a single somatic mutation</div>
+          <div class="rec-grid">
+            <span class="rk">patient</span><span class="rv">TCGA-05-4244</span>
+            <span class="rk">gene</span><span class="rv hl">KRAS</span>
+            <span class="rk">locus</span><span class="rv">chr12:25,398,285</span>
+            <span class="rk">change</span><span class="rv">C&gt;A&nbsp;&nbsp;(SNP)</span>
+            <span class="rk">effect</span><span class="rv">Missense</span>
+            <span class="rk">protein</span><span class="rv hl">G12C</span>
+            <span class="rk">label</span><span class="rv">Lung · LUAD</span>
+          </div>
+          <div class="rec-note">≈ 215 such records per patient → one 187-feature profile</div>
+        </div>
+      </div>
+
+      <div class="pipeline" aria-label="build pipeline">
+        <span class="pstep">cBioPortal API</span><span class="parr">→</span>
+        <span class="pstep">features · gene matrix / TMB / SBS-96</span><span class="parr">→</span>
+        <span class="pstep">DNABERT context</span><span class="parr">→</span>
+        <span class="pstep">XGBoost</span><span class="parr">→</span>
+        <span class="pstep">SHAP + GPT-4o</span>
+      </div>
+      <p class="build-note">Every figure on this page is produced by a numbered script in the public repo, from that one API — reproducible end-to-end with <span class="mono">python scripts/01…08</span>.</p>
     </div>
   </section>
 
@@ -373,13 +446,17 @@
   <!-- ============ FOOTER ============ -->
   <footer>
     <div class="col">
-      <div class="foot-cta">Rigorous, interpretable ML for genomics &amp; oncology.</div>
-      <p style="color:var(--muted); max-width:56ch; margin-top:16px;">Built by a computational biologist working across cancer genomics, drug discovery, and foundation-model ML. Open to collaboration and consulting.</p>
+      <div class="aikym-mark">
+        <span class="aikym-glyph">◇</span>
+        <span class="aikym-name">Aikym<span class="aikym-inc">&nbsp;Inc.</span></span>
+      </div>
+      <div class="foot-cta">Computational biology, built to a scientific standard.</div>
+      <p style="color:var(--muted); max-width:60ch; margin-top:16px;">Aikym Inc. is a computational-biology consultancy — cancer genomics, ML &amp; genomic foundation models, drug discovery, and protein science. OncoOrigin is one case study: real data, interpretable models, honest limits.</p>
       <div class="foot-links">
         <a href="https://github.com/shilpasy/oncoorigin">↳ code &amp; full write-up on GitHub</a>
         <a href="mailto:shilvaru@gmail.com">✉ shilvaru@gmail.com</a>
       </div>
-      <p class="disclaimer">Data: TCGA PanCancer Atlas 2018 via the cBioPortal public API; all patient data de-identified and publicly available. OncoOrigin is a research demonstration, not a validated clinical device. No proprietary tools or patient identifiers were used.</p>
+      <p class="disclaimer">Data: TCGA PanCancer Atlas 2018 via the cBioPortal public API; all patient data de-identified and publicly available. OncoOrigin is a research demonstration by Aikym Inc., not a validated clinical device. No proprietary tools or patient identifiers were used.</p>
     </div>
   </footer>
 
