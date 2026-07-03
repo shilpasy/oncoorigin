@@ -1,188 +1,130 @@
-# Pan-Cancer Molecular Classifier
+# OncoOrigin
 
-**Predicting tumor type from somatic mutation profiles using XGBoost + DNABERT + GPT-4o**
+### Tracing a tumour to its source by reading its mutational fingerprint
 
----
-
-## Clinical Question
-
-> Given a patient's somatic mutation profile from tumor sequencing, can we predict whether this is breast cancer, colorectal cancer, or lung adenocarcinoma?
-
-This is a **3-class molecular classification** problem. No clinical metadata, imaging, or histology is used — only the mutations found in the tumor's DNA.
+**A machine-learning engine that infers a cancer's tissue of origin from somatic mutations alone — built to tackle the Cancer-of-Unknown-Primary problem.**
 
 ---
 
-## Results
+## The problem this solves
 
-| | BRCA (Breast) | COAD (Colorectal) | LUAD (Lung Adeno) | Overall |
+In **3–5% of metastatic cancers**, the tumour is found but its *primary site cannot be identified* — Cancer of Unknown Primary (CUP). This is not an academic curiosity: nearly every cancer therapy is chosen by tissue of origin. An oncologist facing a CUP patient must choose treatment without knowing what they are treating, and CUP carries among the worst outcomes in oncology.
+
+Modern tumour sequencing gives us the one thing that is always present: **the tumour's DNA**. Every cancer accumulates somatic mutations in a pattern shaped by the tissue it grew in and the mutational processes it endured. **OncoOrigin reads that pattern and infers where the cancer started.**
+
+> Feed in a tumour's somatic mutations. Read back a probability over tissues of origin — with a mutational-fingerprint breakdown and a plain-language clinical rationale.
+
+---
+
+## Result
+
+**90.0% accuracy** inferring tissue of origin across three tissues (breast, lung, colorectal) on **2,098 real TCGA patients**, from somatic mutations alone — no imaging, no histology, no clinical metadata.
+
+| | Breast | Lung | Colorectal | Overall |
 |---|---|---|---|---|
-| Precision | 0.87 | 0.94 | 0.93 | — |
-| Recall | 0.95 | 0.92 | 0.79 | — |
-| F1 | 0.91 | 0.93 | 0.85 | — |
-| **Accuracy** | | | | **90.0%** |
-| **Macro F1** | | | | **89.7%** |
+| F1-score | 0.91 | 0.85 | 0.93 | **Acc 90.0% · Macro-F1 89.7%** |
 
-Evaluated with 5-fold stratified cross-validation on **2,098 real TCGA patients**.  
-Random chance for 3 classes = 33%.
+Evaluated by 5-fold stratified cross-validation. Random baseline = 33%; majority-class baseline = 48%.
 
 ---
 
-## Data
+## How it works — the mutational fingerprint
 
-All data are from **The Cancer Genome Atlas (TCGA) PanCancer Atlas 2018**, accessed via the [cBioPortal](https://www.cbioportal.org/) public REST API. No registration is required. All patient data are de-identified and publicly available.
+Cancer leaves forensic evidence in its own genome. OncoOrigin reads three layers of it:
 
-- 450,107 somatic mutations across 2,098 patients
-- 3 cancer types: BRCA (n=1,009), COAD (n=528), LUAD (n=561)
-- Mutations called from whole-exome sequencing (WES)
+**1. Which genes are broken** — the driver architecture.
+APC truncations dominate colorectal cancer; PIK3CA / GATA3 / CDH1 mark breast; EGFR / STK11 / KEAP1 mark lung. The oncoprint below shows each tissue carrying its own driver signature across 2,098 tumours.
+
+![Oncoprint](results/figures/oncoprint.png)
+
+**2. What caused the mutations** — the mutational signature.
+The trinucleotide context of every point mutation encodes its origin: tobacco smoke leaves a C>A-heavy barcode (SBS4), APOBEC enzymes leave C>T/C>G at TpC sites (SBS2/13), an ageing clock leaves C>T at CpG (SBS1). These are the SBS-96 spectra — the most recognisable fingerprint in cancer genomics.
+
+![Mutational signatures](results/figures/mutational_signatures.png)
+
+**3. Where in the genome, in what sequence context** — a genomic foundation model.
+For each driver mutation, OncoOrigin encodes 129 bp of surrounding DNA with **DNABERT** (a BERT model pre-trained on the human genome), capturing local sequence grammar — CpG context, repeats, splice proximity — that gene names and signatures alone miss.
+
+These three layers become a 187-feature profile per patient, fed to a gradient-boosted classifier (**XGBoost**), interpreted with **SHAP**, and finally handed to a **GPT-4o** agent that writes a clinical rationale for each call.
 
 ---
 
-## Pipeline Architecture
+## Tumor GPS — the CUP inference, one card at a time
+
+Primary site withheld; only somatic mutations given. OncoOrigin returns a tissue-of-origin probability and GPT-4o supplies the clinical read. The third card is the honest hard case: the model hedges (55/45) and narrowly misses, and the LLM layer flags the BRCA1 truncation the tabular model under-weighted.
+
+![Tumor GPS cards](results/figures/tumor_gps_cards.png)
+
+---
+
+## Pipeline
 
 ```
-cBioPortal REST API  (TCGA somatic mutations, 3 cancer types)
+cBioPortal REST API  ──►  somatic mutations, 3 TCGA cohorts (2,098 patients, 450k mutations)
+        │
+        ├─► Driver architecture     top-150 gene mutation matrix
+        ├─► Mutational signatures   SBS-96 trinucleotide spectra (Ensembl GRCh37 context)
+        ├─► Sequence context        DNABERT 768-d embeddings of driver-mutation windows → PCA(20)
+        └─► Burden & class          TMB, SBS-6 fractions, mutation-class fractions
         │
         ▼
-  Feature Engineering
-  ├── Gene mutation binary matrix  (top 150 cancer genes, 0/1 per patient)
-  ├── TMB                          (total somatic mutation burden)
-  ├── SBS-6 fractions              (C>A, C>G, C>T, T>A, T>C, T>G — mutational process)
-  └── Mutation class fractions     (missense, nonsense, frameshift, splice…)
+   XGBoost  (5-fold stratified CV)  ─►  90% tissue-of-origin accuracy
         │
-        ▼
-  DNABERT-1  [Foundation Model]
-  ├── Driver gene mutations selected (TP53, KRAS, PIK3CA, APC, EGFR, BRCA1/2…)
-  ├── 129 bp reference context fetched from Ensembl GRCh37 REST API (batch)
-  ├── 6-mer tokenisation → BERT encoder (zhihan1996/DNA_bert_6)
-  ├── 768-dim CLS embeddings mean-pooled per patient
-  └── PCA(20) → 20 additional features (60.8% variance retained)
-        │
-        ▼
-  XGBoost Classifier  [ML Model]
-  ├── 187 total features
-  ├── 5-fold StratifiedKFold cross-validation
-  └── SHAP TreeExplainer → per-feature, per-class importance
-        │
-        ▼
-  GPT-4o LangGraph Agent  [LLM Layer]
-  ├── Takes SHAP top features + driver mutations for each patient
-  ├── Generates structured clinical interpretation (JSON)
-  └── Outputs: predicted type, key drivers, mutational process, therapy implications
+        ├─► SHAP        which features drove each tissue call
+        └─► GPT-4o      LangGraph agent → clinical rationale per patient
 ```
 
----
-
-## Key Biological Findings
-
-**What discriminates the three cancer types (from SHAP):**
-
-| Cancer | Top discriminating features |
+| Script | Does |
 |---|---|
-| BRCA | PIK3CA, CDH1, GATA3 mutations; APOBEC SBS signature |
-| COAD | APC mutation (73% of patients), SMAD4, very high TMB (MSI-H) |
-| LUAD | EGFR, STK11 mutations; high C>A (tobacco) SBS fraction |
-
-**The LLM layer catches what the classifier misses:**  
-Patient TCGA-A1-A0SH (true: BRCA) was misclassified as LUAD by XGBoost. GPT-4o's interpretation flagged: *"The presence of a BRCA1 nonsense mutation (Q934\*) strongly suggests a BRCA-related cancer rather than lung adenocarcinoma."* The LLM applied external biological knowledge not encoded in the tabular features.
-
----
-
-## Project Structure
-
-```
-pan-cancer-classifier/
-├── scripts/
-│   ├── 01_download_data.py      # cBioPortal API download (TCGA mutations + clinical)
-│   ├── 02_build_features.py     # Feature engineering (gene matrix, TMB, SBS-6)
-│   ├── 03_embed_mutations.py    # DNABERT driver mutation embeddings via Ensembl API
-│   ├── 04_train_classifier.py   # XGBoost + SHAP + UMAP
-│   └── 05_interpret.py          # GPT-4o LangGraph clinical interpretation agent
-├── results/
-│   ├── figures/
-│   │   ├── confusion_matrix.png
-│   │   ├── feature_importance.png
-│   │   ├── shap_beeswarm.png
-│   │   └── umap_patients.png
-│   ├── classification_report.txt
-│   └── clinical_interpretations.md
-├── RESULTS_AND_DISCUSSION.md
-├── requirements.txt
-└── .env.example
-```
+| `01_download_data.py` | Pull TCGA somatic mutations + clinical data from cBioPortal (no account needed) |
+| `02_build_features.py` | Gene matrix, TMB, SBS-6 and mutation-class features |
+| `03_embed_mutations.py` | DNABERT embeddings of driver-mutation sequence context |
+| `04_train_classifier.py` | XGBoost + 5-fold CV + SHAP + UMAP |
+| `05_interpret.py` | GPT-4o LangGraph clinical-interpretation agent |
+| `06_mutational_signatures.py` | SBS-96 mutational-signature spectra (the fingerprint) |
+| `07_oncoprint.py` | Driver-gene oncoprint waterfall |
+| `08_tumor_gps.py` | CUP "Tumor GPS" prediction cards (leak-free out-of-fold probabilities) |
 
 ---
 
-## How to Run
+## Data & honesty
 
-### 1. Environment
+- **Real patient tumours** — TCGA PanCancer Atlas 2018 (BRCA, LUAD, COAD), via the public [cBioPortal](https://www.cbioportal.org/) API. De-identified, publicly available.
+- **No leakage in the demo cards** — Tumor GPS probabilities are out-of-fold (each patient scored by a model that never trained on them).
+- **Curated drivers** — the oncoprint deliberately excludes TTN/MUC16 (long-gene artefacts that masquerade as drivers by mutation count).
+- **Signatures are sampled** — SBS-96 spectra use seeded ~8,000-SNV samples per tissue (aggregate signatures are stable at this depth).
+
+### What this is not
+A validated clinical device. It is a rigorous proof of concept on three tissues. Real CUP classifiers span 20–30 tissue types and integrate copy-number, expression, and methylation — the natural extensions below.
+
+## Extends to
+- **All 33 TCGA tissues** (the architecture is class-agnostic)
+- **Multi-omics** — copy number, RNA expression, methylation alongside mutations
+- **Independent validation** — MSK-IMPACT / ICGC hold-out cohorts
+- **Fine-tuned DNABERT** on somatic-mutation contexts (COSMIC)
+
+---
+
+## Run it
 
 ```bash
-python3 -m venv .venv
-source .venv/bin/activate
+python3 -m venv .venv && source .venv/bin/activate
 pip install -r requirements.txt
+brew install libomp                 # macOS: XGBoost needs OpenMP
+cp .env.example .env                # add your OpenAI key for step 05
 
-# macOS (Apple Silicon): XGBoost requires OpenMP
-brew install libomp
-```
-
-### 2. API Key
-
-```bash
-cp .env.example .env
-# Add your OpenAI API key to .env
-```
-
-### 3. Run the pipeline
-
-```bash
-# Download data from cBioPortal (no account needed, ~10 min)
-python scripts/01_download_data.py
-
-# Feature engineering
+python scripts/01_download_data.py  # ~10 min, pulls from cBioPortal
 python scripts/02_build_features.py
-
-# DNABERT embeddings (~5 min, downloads model on first run)
 python scripts/03_embed_mutations.py
-
-# Train classifier + SHAP + UMAP
 python scripts/04_train_classifier.py
-
-# GPT-4o clinical interpretation
 python scripts/05_interpret.py
+python scripts/06_mutational_signatures.py
+python scripts/07_oncoprint.py
+python scripts/08_tumor_gps.py
 ```
 
----
-
-## Tech Stack
-
-| Component | Technology |
-|---|---|
-| Data source | cBioPortal REST API (TCGA PanCancer Atlas 2018) |
-| Sequence fetch | Ensembl GRCh37 REST API (batch, no download) |
-| Foundation model | DNABERT-1 (`zhihan1996/DNA_bert_6`) via HuggingFace |
-| ML classifier | XGBoost with SHAP interpretability |
-| Dimensionality reduction | PCA + UMAP |
-| LLM agent | GPT-4o-mini via LangGraph (structured JSON output) |
-| Language | Python 3.9 |
+See [RESULTS_AND_DISCUSSION.md](RESULTS_AND_DISCUSSION.md) for the full scientific write-up.
 
 ---
 
-## Limitations
-
-- 3 cancer types only (TCGA has 33). Extension to pan-cancer 33-class classification is straightforward.
-- Somatic mutations only — no copy number variation (CNV), RNA expression, or methylation. ALK/RET fusions in LUAD are invisible to this model.
-- Cross-validation within TCGA; independent validation on ICGC or MSK-IMPACT data is needed.
-- DNABERT was not fine-tuned on somatic mutation data.
-
-See [RESULTS_AND_DISCUSSION.md](RESULTS_AND_DISCUSSION.md) for full discussion.
-
----
-
-## Why this matters
-
-Tumor molecular profiling is increasingly used clinically to guide treatment decisions (targeted therapy eligibility, immunotherapy selection). This project demonstrates that the *pattern of somatic mutations alone* — without histology, imaging, or gene expression — carries enough signal to identify cancer type with 90% accuracy. The pipeline is fully reproducible from public data and can be extended to all 33 TCGA cancer types.
-
----
-
-*Data: TCGA PanCancer Atlas 2018 via cBioPortal. All data are publicly available and de-identified.*  
-*Built as a portfolio project demonstrating ML/AI applied to clinical genomics.*
+*Built on public TCGA data. No proprietary tools, no patient identifiers. A demonstration of applied ML + genomic foundation models + LLM reasoning on a real clinical problem.*

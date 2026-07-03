@@ -1,6 +1,12 @@
-# Results and Discussion
+# OncoOrigin — Results and Discussion
 
-## Pan-Cancer Molecular Classifier: Predicting Tumor Type from Somatic Mutation Profiles
+### Inferring a tumour's tissue of origin from its mutational fingerprint
+
+## Motivation: the Cancer-of-Unknown-Primary problem
+
+In 3–5% of metastatic cancers, the primary tumour site cannot be identified (Cancer of Unknown Primary, CUP). Because nearly all cancer therapy is selected by tissue of origin, these patients face among the worst outcomes in oncology. The one datum always available is the tumour's DNA. This project asks a focused version of the CUP question: **can somatic mutations alone identify a tumour's tissue of origin?** Here, across three tissues (breast, lung, colorectal), the answer is yes, at 90% accuracy.
+
+## Predicting Tumor Type from Somatic Mutation Profiles
 
 ---
 
