@@ -6,7 +6,7 @@
 
 > **Scope note:** tissue-of-origin classification is a well-established problem with substantial prior work. MutaTrace makes no novelty claim. Its value is clean, interpretable, fully reproducible execution on public data — a demonstration of workflow and craft, not a new method.
 
-<sub>A case study by **Aikyam Inc.** — computational biology, built to a scientific standard. · [Interactive case-study page](https://claude.ai/code/artifact/a904842a-efc3-4fa2-b79e-ba9a18752f77)</sub>
+<sub>A case study by **Aikyam Inc.** — computational biology, built to a scientific standard. · **[▶ Live interactive case study](https://shilpasy.github.io/mutatrace/)**</sub>
 
 ---
 
