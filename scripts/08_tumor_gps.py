@@ -3,7 +3,7 @@
 08_tumor_gps.py — the "Tumor GPS" CUP hero card.
 
 Simulates the Cancer-of-Unknown-Primary use case: a tumour arrives with its
-primary site UNKNOWN. We feed only its somatic mutation profile to OncoOrigin
+primary site UNKNOWN. We feed only its somatic mutation profile to MutaTrace
 and read back a probability over tissues of origin — then hand the call to the
 GPT-4o layer for a clinical rationale. Three cases: two confident calls and one
 hard case where the model hedges and the LLM supplies the missing knowledge.
@@ -103,7 +103,7 @@ def draw_card(ax, case, X, classes, proba_row, interp, profile):
 
     # Probability bars
     bar_top = y0 - 0.55
-    ax.text(0.55, bar_top, "OncoOrigin — tissue-of-origin probability",
+    ax.text(0.55, bar_top, "MutaTrace — tissue-of-origin probability",
             fontsize=9, fontweight="bold", color="#444", va="center")
     order = np.argsort(proba_row)[::-1]
     by = bar_top - 0.55
@@ -130,7 +130,7 @@ def draw_card(ax, case, X, classes, proba_row, interp, profile):
 
     # Verdict line
     verdict_y = by - 0.05
-    ax.text(0.55, verdict_y, "OncoOrigin infers:", fontsize=8.6, color="#666", va="center")
+    ax.text(0.55, verdict_y, "MutaTrace infers:", fontsize=8.6, color="#666", va="center")
     ax.text(3.0, verdict_y, f"{TISSUE_NAME[pred]}  ({conf*100:.0f}%)",
             fontsize=11, fontweight="bold", color=pred_color, va="center")
 

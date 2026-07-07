@@ -6,7 +6,7 @@ An oncoprint is the single most recognisable cohort-genomics visual: driver
 genes as rows, patients as columns, cells coloured by mutation class, sorted so
 the mutations cascade. It shows at a glance that each cancer type has its own
 driver architecture — APC in colorectal, PIK3CA/GATA3 in breast, EGFR/STK11 in
-lung — which is exactly the signal OncoOrigin's classifier exploits.
+lung — which is exactly the signal MutaTrace's classifier exploits.
 
 Output:
   results/figures/oncoprint.png

@@ -1,4 +1,4 @@
-# OncoOrigin — Results and Discussion
+# MutaTrace — Results and Discussion
 
 ### Inferring a tumour's tissue of origin from its mutational fingerprint
 

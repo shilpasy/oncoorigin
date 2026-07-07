@@ -1,6 +1,6 @@
 <!doctype html>
 <html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"></head><body>
-<title>OncoOrigin — Tracing a tumour to its source</title>
+<title>MutaTrace — Tracing a tumour to its source</title>
 <style>
   :root{
     --ground:#0B0F15; --ground-2:#0E141C; --surface:#141A23; --surface-2:#18202B;
@@ -228,9 +228,9 @@
   <header class="hero">
     <div class="col">
       <div class="eyebrow">Computational Oncology · Case Study</div>
-      <h1>Onco<span class="glow">Origin</span></h1>
+      <h1>Muta<span class="glow">Trace</span></h1>
       <div class="lede">Tracing a tumour to its source by reading its mutational fingerprint.</div>
-      <p class="sub">When a cancer is found but its origin is not, treatment stalls. OncoOrigin infers a tumour's tissue of origin from its somatic mutations alone — no imaging, no histology — at 90% accuracy across breast, lung, and colorectal cancer.</p>
+      <p class="sub">When a cancer is found but its origin is not, treatment stalls. MutaTrace infers a tumour's tissue of origin from its somatic mutations alone — no imaging, no histology — at 90% accuracy across breast, lung, and colorectal cancer.</p>
 
       <div class="barcode-shell">
         <div class="barcode-tags"><span>C&gt;A</span><span>C&gt;G</span><span>C&gt;T</span><span>T&gt;A</span><span>T&gt;C</span><span>T&gt;G</span></div>
@@ -253,7 +253,7 @@
       <div class="kicker"><span class="bar"></span><span class="eyebrow">The problem</span></div>
       <div class="problem">
         <div class="big">In <em>3–5%</em> of metastatic cancers, the tumour is found but its primary site cannot be identified.</div>
-        <p style="margin:0; font-size:17px;">This is Cancer of Unknown Primary (CUP). Because nearly every therapy is chosen by tissue of origin, these patients are treated half-blind — and CUP carries among the worst outcomes in oncology. The one datum always in hand is the tumour's DNA. OncoOrigin turns that DNA into an answer.</p>
+        <p style="margin:0; font-size:17px;">This is Cancer of Unknown Primary (CUP). Because nearly every therapy is chosen by tissue of origin, these patients are treated half-blind — and CUP carries among the worst outcomes in oncology. The one datum always in hand is the tumour's DNA. MutaTrace turns that DNA into an answer.</p>
       </div>
     </div>
   </section>
@@ -308,7 +308,7 @@
     <div class="col">
       <div class="kicker"><span class="bar"></span><span class="eyebrow">The method — three layers of forensic evidence</span></div>
       <h2>Every cancer records its own history in its genome.</h2>
-      <p class="lead">OncoOrigin reads that record on three independent axes, then fuses them into one prediction per patient.</p>
+      <p class="lead">MutaTrace reads that record on three independent axes, then fuses them into one prediction per patient.</p>
       <div class="layers">
         <div class="layer l1">
           <div class="tag">Evidence I · what broke</div>
@@ -432,6 +432,7 @@
     <div class="col">
       <div class="kicker"><span class="bar"></span><span class="eyebrow">Rigour &amp; honest limits</span></div>
       <h2>What makes it trustworthy — and where it stops.</h2>
+      <p class="lead">Cancer tissue-of-origin classification is a well-established problem with a body of prior work. MutaTrace makes no novelty claim — its value is a clean, interpretable, fully reproducible end-to-end build on public data, not a new method.</p>
       <div class="honesty">
         <div class="hrow"><span class="mk">✓</span><p><b>No leakage in the demo.</b> Tumor GPS probabilities are out-of-fold — each patient scored by a model that never trained on them.</p></div>
         <div class="hrow"><span class="mk">✓</span><p><b>Curated drivers.</b> TTN and MUC16 excluded — long genes that masquerade as drivers by mutation count.</p></div>
@@ -451,12 +452,12 @@
         <span class="aikym-name">Aikyam<span class="aikym-inc">&nbsp;Inc.</span></span>
       </div>
       <div class="foot-cta">Computational biology, built to a scientific standard.</div>
-      <p style="color:var(--muted); max-width:60ch; margin-top:16px;">Aikyam Inc. is a computational-biology consultancy — cancer genomics, ML &amp; genomic foundation models, drug discovery, and protein science. OncoOrigin is one case study: real data, interpretable models, honest limits.</p>
+      <p style="color:var(--muted); max-width:60ch; margin-top:16px;">Aikyam Inc. is a computational-biology consultancy — cancer genomics, ML &amp; genomic foundation models, drug discovery, and protein science. MutaTrace is one case study: real data, interpretable models, honest limits.</p>
       <div class="foot-links">
-        <a href="https://github.com/shilpasy/oncoorigin">↳ code &amp; full write-up on GitHub</a>
+        <a href="https://github.com/shilpasy/mutatrace">↳ code &amp; full write-up on GitHub</a>
         <a href="mailto:shilvaru@gmail.com">✉ shilvaru@gmail.com</a>
       </div>
-      <p class="disclaimer">Data: TCGA PanCancer Atlas 2018 via the cBioPortal public API; all patient data de-identified and publicly available. OncoOrigin is a research demonstration by Aikyam Inc., not a validated clinical device. No proprietary tools or patient identifiers were used.</p>
+      <p class="disclaimer">Data: TCGA PanCancer Atlas 2018 via the cBioPortal public API; all patient data de-identified and publicly available. MutaTrace is a research demonstration by Aikyam Inc., not a validated clinical device. No proprietary tools or patient identifiers were used.</p>
     </div>
   </footer>
 

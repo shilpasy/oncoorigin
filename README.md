@@ -1,8 +1,10 @@
-# OncoOrigin
+# MutaTrace
 
-### Tracing a tumour to its source by reading its mutational fingerprint
+### Inferring cancer tissue-of-origin from somatic mutation signatures
 
-**A machine-learning engine that infers a cancer's tissue of origin from somatic mutations alone — built to tackle the Cancer-of-Unknown-Primary problem.**
+**A reproducible, end-to-end ML + foundation-model workflow that infers a tumour's tissue of origin from its somatic mutations alone — the core task in Cancer-of-Unknown-Primary diagnosis.**
+
+> **Scope note:** tissue-of-origin classification is a well-established problem with substantial prior work. MutaTrace makes no novelty claim. Its value is clean, interpretable, fully reproducible execution on public data — a demonstration of workflow and craft, not a new method.
 
 <sub>A case study by **Aikyam Inc.** — computational biology, built to a scientific standard. · [Interactive case-study page](https://claude.ai/code/artifact/a904842a-efc3-4fa2-b79e-ba9a18752f77)</sub>
 
@@ -12,7 +14,7 @@
 
 In **3–5% of metastatic cancers**, the tumour is found but its *primary site cannot be identified* — Cancer of Unknown Primary (CUP). This is not an academic curiosity: nearly every cancer therapy is chosen by tissue of origin. An oncologist facing a CUP patient must choose treatment without knowing what they are treating, and CUP carries among the worst outcomes in oncology.
 
-Modern tumour sequencing gives us the one thing that is always present: **the tumour's DNA**. Every cancer accumulates somatic mutations in a pattern shaped by the tissue it grew in and the mutational processes it endured. **OncoOrigin reads that pattern and infers where the cancer started.**
+Modern tumour sequencing gives us the one thing that is always present: **the tumour's DNA**. Every cancer accumulates somatic mutations in a pattern shaped by the tissue it grew in and the mutational processes it endured. **MutaTrace reads that pattern and infers where the cancer started.**
 
 > Feed in a tumour's somatic mutations. Read back a probability over tissues of origin — with a mutational-fingerprint breakdown and a plain-language clinical rationale.
 
@@ -63,7 +65,7 @@ Each patient's ~215 mutation records are aggregated by [`02_build_features.py`](
 
 ## How it works — the mutational fingerprint
 
-Cancer leaves forensic evidence in its own genome. OncoOrigin reads three layers of it:
+Cancer leaves forensic evidence in its own genome. MutaTrace reads three layers of it:
 
 **1. Which genes are broken** — the driver architecture.
 APC truncations dominate colorectal cancer; PIK3CA / GATA3 / CDH1 mark breast; EGFR / STK11 / KEAP1 mark lung. The oncoprint below shows each tissue carrying its own driver signature across 2,098 tumours.
@@ -76,7 +78,7 @@ The trinucleotide context of every point mutation encodes its origin: tobacco sm
 ![Mutational signatures](results/figures/mutational_signatures.png)
 
 **3. Where in the genome, in what sequence context** — a genomic foundation model.
-For each driver mutation, OncoOrigin encodes 129 bp of surrounding DNA with **DNABERT** (a BERT model pre-trained on the human genome), capturing local sequence grammar — CpG context, repeats, splice proximity — that gene names and signatures alone miss.
+For each driver mutation, MutaTrace encodes 129 bp of surrounding DNA with **DNABERT** (a BERT model pre-trained on the human genome), capturing local sequence grammar — CpG context, repeats, splice proximity — that gene names and signatures alone miss.
 
 These three layers become a 187-feature profile per patient, fed to a gradient-boosted classifier (**XGBoost**), interpreted with **SHAP**, and finally handed to a **GPT-4o** agent that writes a clinical rationale for each call.
 
@@ -84,7 +86,7 @@ These three layers become a 187-feature profile per patient, fed to a gradient-b
 
 ## Tumor GPS — the CUP inference, one card at a time
 
-Primary site withheld; only somatic mutations given. OncoOrigin returns a tissue-of-origin probability and GPT-4o supplies the clinical read. The third card is the honest hard case: the model hedges (55/45) and narrowly misses, and the LLM layer flags the BRCA1 truncation the tabular model under-weighted.
+Primary site withheld; only somatic mutations given. MutaTrace returns a tissue-of-origin probability and GPT-4o supplies the clinical read. The third card is the honest hard case: the model hedges (55/45) and narrowly misses, and the LLM layer flags the BRCA1 truncation the tabular model under-weighted.
 
 ![Tumor GPS cards](results/figures/tumor_gps_cards.png)
 
@@ -166,6 +168,6 @@ See [RESULTS_AND_DISCUSSION.md](RESULTS_AND_DISCUSSION.md) for the full scientif
 
 ### About Aikyam Inc.
 
-**Aikyam Inc.** is a computational-biology consultancy spanning cancer genomics, ML & genomic foundation models, drug discovery, and protein science. OncoOrigin is one case study — real data, interpretable models, honest limits.
+**Aikyam Inc.** is a computational-biology consultancy spanning cancer genomics, ML & genomic foundation models, drug discovery, and protein science. MutaTrace is one case study — real data, interpretable models, honest limits.
 
 📫 [shilvaru@gmail.com](mailto:shilvaru@gmail.com) · [github.com/shilpasy](https://github.com/shilpasy)

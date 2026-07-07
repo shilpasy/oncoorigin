@@ -5,7 +5,7 @@
 Every tumor records what caused it in the trinucleotide context of its point
 mutations. Tobacco smoke leaves a C>A-heavy signature (SBS4); APOBEC enzymes
 leave C>T/C>G at TpC (SBS2/13); an ageing clock leaves C>T at CpG (SBS1).
-This is the forensic fingerprint at the heart of OncoOrigin.
+This is the forensic fingerprint at the heart of MutaTrace.
 
 For each cancer type:
   1. Sample up to N clean single-base SNVs (seeded, reproducible).
