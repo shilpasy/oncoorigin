@@ -6,7 +6,7 @@
 
 > **Scope note:** tissue-of-origin classification is a well-established problem with substantial prior work. MutaTrace makes no novelty claim. Its value is clean, interpretable, fully reproducible execution on public data — a demonstration of workflow and craft, not a new method.
 
-<sub>A case study by **Aikyam Inc.** — computational biology, built to a scientific standard. · **[▶ Live interactive case study](https://shilpasy.github.io/mutatrace/)**</sub>
+<sub>A case study by **Aikyam AI Labs** — computational biology, built to a scientific standard. · **[▶ Live interactive case study](https://shilpasy.github.io/mutatrace/)**</sub>
 
 ---
 
@@ -166,8 +166,8 @@ See [RESULTS_AND_DISCUSSION.md](RESULTS_AND_DISCUSSION.md) for the full scientif
 
 ---
 
-### About Aikyam Inc.
+### About Aikyam AI Labs
 
-**Aikyam Inc.** is a computational-biology consultancy spanning cancer genomics, ML & genomic foundation models, drug discovery, and protein science. MutaTrace is one case study — real data, interpretable models, honest limits.
+**Aikyam AI Labs** works at the intersection of computational biology and AI — cancer genomics, ML & genomic foundation models, drug discovery, and protein science. MutaTrace is one case study — real data, interpretable models, honest limits.
 
-📫 [shilvaru@gmail.com](mailto:shilvaru@gmail.com) · [github.com/shilpasy](https://github.com/shilpasy)
+📫 [inquiry@aikyam.ca](mailto:inquiry@aikyam.ca) · [github.com/shilpasy](https://github.com/shilpasy)
