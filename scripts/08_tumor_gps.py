@@ -174,8 +174,8 @@ def main():
         draw_card(ax, case, X, classes, proba,
                   rec.get("interpretation", {}), rec.get("profile", {}))
 
-    fig.suptitle("Tumor GPS — inferring a cancer's tissue of origin from its DNA alone",
-                 fontsize=16, fontweight="bold", y=1.0)
+    fig.suptitle("Per-patient tissue-of-origin inference — primary site withheld (out-of-fold)",
+                 fontsize=15, fontweight="bold", y=1.0)
     fig.text(0.5, 0.02,
              "The Cancer-of-Unknown-Primary problem, simulated: primary site withheld, "
              "only somatic mutations given. Right-hand card is the hard case — the model "

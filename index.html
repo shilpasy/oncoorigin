@@ -1,27 +1,23 @@
 <!doctype html>
 <html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"></head><body>
-<title>MutaTrace — Tracing a tumour to its source</title>
+<title>MutaTrace — tissue-of-origin from somatic mutations</title>
 <style>
   :root{
-    --ground:#0B0F15; --ground-2:#0E141C; --surface:#141A23; --surface-2:#18202B;
-    --hairline:#242E3B; --hairline-2:#2E3A49;
-    --ink:#EAF0F6; --ink-2:#C4CFDB; --muted:#8695A6; --faint:#5C6a7a;
-    --plate:#F7F9FB; --plate-ink:#1A222C;
-    --cyan:#1EBFF0; --cyan-deep:#0E7FA8;
-    --breast:#E87D72; --lung:#56B4E9; --colon:#2FBE8F;
-    --red:#E9564F; --amber:#E6A93B; --green:#6FCF57;
+    --ground:#FBFCFD; --ground-2:#EEF2F6; --surface:#FFFFFF; --surface-2:#F6F8FA;
+    --hairline:#E3E8EE; --hairline-2:#CFD8E1;
+    --ink:#111A22; --ink-2:#3A4A57; --muted:#5F6E7B; --faint:#8B99A5;
+    --plate:#FFFFFF;
+    --cyan:#0C7BAE; --cyan-bright:#1EBFF0; --cyan-deep:#0A6C99;
+    --breast:#D65F49; --lung:#2E90D0; --colon:#1FA57E;
+    --red:#D64541; --green:#3B9A32;
     --maxw:1080px;
     --mono:ui-monospace,"SF Mono","JetBrains Mono",Menlo,Consolas,monospace;
     --grot:-apple-system,BlinkMacSystemFont,"Segoe UI",system-ui,Roboto,sans-serif;
   }
   *{box-sizing:border-box;}
-  html,body{margin:0; background:#0B0F15;}
+  html,body{margin:0; background:var(--ground);}
   .wrap{
-    min-height:100vh;
-    background:
-      radial-gradient(1200px 600px at 78% -8%, rgba(30,191,240,.10), transparent 60%),
-      radial-gradient(900px 500px at 0% 0%, rgba(47,190,143,.06), transparent 55%),
-      var(--ground);
+    min-height:100vh; background:var(--ground);
     color:var(--ink); font-family:var(--grot);
     line-height:1.6; -webkit-font-smoothing:antialiased;
     font-size:17px; overflow-x:hidden;
@@ -30,9 +26,9 @@
   .wide{max-width:1220px;}
 
   /* ---- type ---- */
-  h1,h2,h3{ text-wrap:balance; margin:0; font-weight:800; letter-spacing:-.02em; }
+  h1,h2,h3{ text-wrap:balance; margin:0; font-weight:800; letter-spacing:-.02em; color:var(--ink); }
   .eyebrow{
-    font-family:var(--mono); font-size:12.5px; letter-spacing:.28em;
+    font-family:var(--mono); font-size:12px; letter-spacing:.22em;
     text-transform:uppercase; color:var(--cyan); font-weight:600;
   }
   .mono{font-family:var(--mono);}
@@ -42,39 +38,36 @@
   a:hover{text-decoration:underline;}
 
   /* ---- hero ---- */
-  header.hero{ padding:96px 0 40px; position:relative; }
-  .hero .eyebrow{margin-bottom:22px;}
+  header.hero{ padding:88px 0 36px; position:relative; }
+  .hero .eyebrow{margin-bottom:20px;}
   .hero h1{
-    font-size:clamp(46px,8.4vw,104px); line-height:.94; letter-spacing:-.045em;
-    margin-bottom:22px;
+    font-size:clamp(42px,7.4vw,88px); line-height:.96; letter-spacing:-.04em;
+    margin-bottom:20px;
   }
-  .hero h1 .glow{
-    background:linear-gradient(92deg,#7FE0FF,#1EBFF0 55%,#2FBE8F);
-    -webkit-background-clip:text; background-clip:text; color:transparent;
-  }
+  .hero h1 .glow{ color:var(--cyan); }
   .hero .lede{
-    font-size:clamp(19px,2.5vw,25px); color:var(--ink); max-width:23ch;
-    font-weight:500; letter-spacing:-.01em; line-height:1.32;
+    font-size:clamp(18px,2.3vw,23px); color:var(--ink); max-width:30ch;
+    font-weight:600; letter-spacing:-.01em; line-height:1.28;
   }
-  .hero .sub{ max-width:60ch; color:var(--muted); font-size:17.5px; margin-top:18px;}
+  .hero .sub{ max-width:62ch; color:var(--muted); font-size:16.5px; margin-top:16px;}
 
   /* barcode */
-  .barcode-shell{margin:52px 0 8px;}
+  .barcode-shell{margin:48px 0 8px;}
   .barcode-tags{
     display:flex; justify-content:space-between; align-items:flex-end;
-    font-family:var(--mono); font-size:11px; letter-spacing:.12em;
-    color:var(--faint); text-transform:uppercase; margin-bottom:10px;
+    font-family:var(--mono); font-size:11px; letter-spacing:.1em;
+    color:var(--faint); text-transform:uppercase; margin-bottom:9px;
   }
   .barcode{
-    display:flex; align-items:flex-end; gap:2px; height:132px;
+    display:flex; align-items:flex-end; gap:2px; height:128px;
     padding:16px 18px; border:1px solid var(--hairline);
-    border-radius:12px; background:linear-gradient(180deg,var(--ground-2),rgba(20,26,35,.4));
+    border-radius:10px; background:var(--surface);
   }
   .barcode i{ flex:1; border-radius:2px 2px 0 0; height:2%; transform-origin:bottom;
-    display:block; opacity:.94; }
+    display:block; opacity:.96; }
   .barcode-cap{
     font-family:var(--mono); font-size:11.5px; color:var(--faint);
-    margin-top:12px; letter-spacing:.04em;
+    margin-top:11px; letter-spacing:.02em;
   }
   .barcode-cap b{color:var(--cyan); font-weight:600;}
 
@@ -82,62 +75,61 @@
   .stats{
     display:grid; grid-template-columns:repeat(4,1fr); gap:1px;
     background:var(--hairline); border:1px solid var(--hairline);
-    border-radius:12px; overflow:hidden; margin:56px 0 8px;
+    border-radius:10px; overflow:hidden; margin:52px 0 8px;
   }
-  .stat{background:var(--surface); padding:22px 20px;}
-  .stat .n{font-family:var(--mono); font-size:clamp(26px,3.6vw,38px); font-weight:600;
+  .stat{background:var(--surface); padding:20px 20px;}
+  .stat .n{font-family:var(--mono); font-size:clamp(24px,3.4vw,34px); font-weight:600;
     letter-spacing:-.02em; color:var(--ink); line-height:1;}
   .stat .n .u{color:var(--cyan); font-size:.62em;}
-  .stat .k{font-size:12.5px; color:var(--muted); margin-top:9px; letter-spacing:.01em;}
+  .stat .k{font-size:12px; color:var(--muted); margin-top:9px; letter-spacing:.01em;}
 
   /* section scaffolding */
-  section{padding:64px 0;}
-  .rule{ height:1px; background:linear-gradient(90deg,transparent,var(--hairline) 12%,var(--hairline) 88%,transparent); border:0; margin:0;}
-  .kicker{ display:flex; align-items:center; gap:14px; margin-bottom:26px;}
-  .kicker .bar{width:26px; height:3px; border-radius:2px; background:var(--cyan);}
-  h2{font-size:clamp(28px,4vw,40px); line-height:1.06; letter-spacing:-.03em;}
-  .lead{font-size:20px; color:var(--ink); max-width:64ch; margin-top:16px; font-weight:450;}
+  section{padding:58px 0;}
+  .kicker{ display:flex; align-items:center; gap:12px; margin-bottom:22px;}
+  .kicker .bar{width:22px; height:2px; border-radius:2px; background:var(--cyan);}
+  h2{font-size:clamp(26px,3.6vw,36px); line-height:1.08; letter-spacing:-.025em;}
+  .lead{font-size:19px; color:var(--ink-2); max-width:66ch; margin-top:14px; font-weight:450;}
 
-  /* problem statement */
+  /* background statement */
   .problem{
     border:1px solid var(--hairline); border-left:3px solid var(--breast);
-    background:linear-gradient(180deg,var(--surface),var(--ground-2));
-    border-radius:14px; padding:34px 34px;
+    background:var(--surface);
+    border-radius:12px; padding:30px 32px;
   }
-  .problem .big{font-size:clamp(24px,3.4vw,32px); font-weight:700; color:var(--ink);
-    letter-spacing:-.02em; line-height:1.22; margin-bottom:14px;}
+  .problem .big{font-size:clamp(22px,3.1vw,29px); font-weight:700; color:var(--ink);
+    letter-spacing:-.02em; line-height:1.24; margin-bottom:13px;}
   .problem .big em{color:var(--breast); font-style:normal;}
 
-  /* evidence layer cards */
+  /* feature-family cards */
   .layers{display:grid; grid-template-columns:repeat(3,1fr); gap:16px; margin-top:8px;}
-  .layer{ background:var(--surface); border:1px solid var(--hairline); border-radius:14px;
-    padding:24px 22px 26px; transition:transform .25s ease, border-color .25s ease;}
-  .layer:hover{transform:translateY(-4px); border-color:var(--hairline-2);}
-  .layer .tag{font-family:var(--mono); font-size:11px; letter-spacing:.16em; text-transform:uppercase;
+  .layer{ background:var(--surface); border:1px solid var(--hairline); border-radius:12px;
+    padding:22px 22px 24px; transition:transform .2s ease, box-shadow .2s ease;}
+  .layer:hover{transform:translateY(-3px); box-shadow:0 10px 28px -14px rgba(20,40,60,.18);}
+  .layer .tag{font-family:var(--mono); font-size:11px; letter-spacing:.12em; text-transform:uppercase;
     color:var(--faint);}
-  .layer h3{font-size:19px; margin:12px 0 10px; letter-spacing:-.02em;}
-  .layer p{font-size:15px; color:var(--muted); margin:0;}
-  .layer .chip-row{margin-top:16px; display:flex; flex-wrap:wrap; gap:6px;}
+  .layer h3{font-size:18px; margin:11px 0 9px; letter-spacing:-.02em;}
+  .layer p{font-size:14.5px; color:var(--muted); margin:0;}
+  .layer .chip-row{margin-top:15px; display:flex; flex-wrap:wrap; gap:6px;}
   .gchip{font-family:var(--mono); font-size:11.5px; padding:3px 8px; border-radius:6px;
     border:1px solid var(--hairline-2); color:var(--ink-2); background:var(--ground-2);}
   .layer.l1{border-top:3px solid var(--colon);}
   .layer.l2{border-top:3px solid var(--cyan);}
   .layer.l3{border-top:3px solid var(--lung);}
 
-  /* mounted figure plates */
-  .plate-block{margin-top:30px;}
-  .plate{ background:var(--plate); border-radius:14px; padding:16px;
-    box-shadow:0 24px 60px -24px rgba(0,0,0,.7), 0 0 0 1px var(--hairline);
+  /* figure plates */
+  .plate-block{margin-top:28px;}
+  .plate{ background:var(--plate); border-radius:12px; padding:14px;
+    box-shadow:0 4px 22px -10px rgba(20,45,70,.16), 0 0 0 1px var(--hairline);
     position:relative;}
-  .plate img{display:block; width:100%; height:auto; border-radius:6px;}
+  .plate img{display:block; width:100%; height:auto; border-radius:5px;}
   .plate .specimen{
-    position:absolute; top:-11px; left:22px; font-family:var(--mono); font-size:11px;
-    letter-spacing:.14em; text-transform:uppercase; color:var(--ground);
-    background:var(--cyan); padding:4px 11px; border-radius:6px; font-weight:600;
+    position:absolute; top:-11px; left:20px; font-family:var(--mono); font-size:11px;
+    letter-spacing:.1em; text-transform:uppercase; color:#fff;
+    background:var(--cyan); padding:4px 11px; border-radius:5px; font-weight:600;
   }
-  figcaption{font-family:var(--mono); font-size:13px; color:var(--muted); margin-top:16px;
-    line-height:1.5; padding-left:2px;}
-  figcaption b{color:var(--ink-2); font-weight:600;}
+  figcaption{font-family:var(--mono); font-size:12.5px; color:var(--muted); margin-top:15px;
+    line-height:1.55; padding-left:2px;}
+  figcaption b{color:var(--ink); font-weight:600;}
   figure{margin:0;}
 
   /* results */
@@ -146,64 +138,64 @@
   .mtile{background:var(--surface); border:1px solid var(--hairline); border-radius:12px; padding:20px;}
   .mtile .lab{display:flex; align-items:center; gap:9px; font-size:14px; color:var(--muted);}
   .dot{width:9px; height:9px; border-radius:50%; display:inline-block;}
-  .mtile .f1{font-family:var(--mono); font-size:30px; font-weight:600; margin-top:12px; letter-spacing:-.02em;}
+  .mtile .f1{font-family:var(--mono); font-size:30px; font-weight:600; margin-top:12px; letter-spacing:-.02em; color:var(--ink);}
   .mtile .pr{font-family:var(--mono); font-size:12.5px; color:var(--faint); margin-top:6px;}
-  .headline-metric{background:linear-gradient(160deg,rgba(30,191,240,.13),var(--surface));
-    border:1px solid var(--cyan-deep); border-radius:14px; padding:26px; grid-column:1 / -1;}
-  .headline-metric .n{font-family:var(--mono); font-size:clamp(40px,6vw,58px); font-weight:700;
+  .headline-metric{background:linear-gradient(160deg,rgba(30,191,240,.10),var(--surface));
+    border:1px solid var(--hairline-2); border-radius:12px; padding:24px; grid-column:1 / -1;}
+  .headline-metric .n{font-family:var(--mono); font-size:clamp(38px,5.5vw,54px); font-weight:700;
     letter-spacing:-.03em; color:var(--ink); line-height:1;}
   .headline-metric .n .u{color:var(--cyan);}
-  .headline-metric .k{color:var(--ink-2); margin-top:10px; font-size:15px;}
+  .headline-metric .k{color:var(--ink-2); margin-top:9px; font-size:15px;}
   .headline-metric .base{color:var(--faint); font-family:var(--mono); font-size:12px; margin-top:4px;}
 
-  /* method chips */
+  /* implementation chips */
   .methods{display:flex; flex-wrap:wrap; gap:10px; margin-top:6px;}
   .method{ background:var(--surface); border:1px solid var(--hairline); border-radius:10px;
-    padding:14px 16px; display:flex; flex-direction:column; gap:3px; min-width:150px;}
-  .method .m-k{font-family:var(--mono); font-size:11px; letter-spacing:.12em; text-transform:uppercase; color:var(--cyan);}
+    padding:13px 16px; display:flex; flex-direction:column; gap:3px; min-width:150px;}
+  .method .m-k{font-family:var(--mono); font-size:11px; letter-spacing:.1em; text-transform:uppercase; color:var(--cyan);}
   .method .m-v{font-size:14.5px; color:var(--ink-2);}
 
-  /* input data */
-  .data-panel{display:grid; grid-template-columns:1.08fr .92fr; gap:16px; margin-top:26px;}
-  .provenance{background:var(--surface); border:1px solid var(--hairline); border-radius:14px; padding:22px 26px;}
+  /* data provenance */
+  .data-panel{display:grid; grid-template-columns:1.08fr .92fr; gap:16px; margin-top:24px;}
+  .provenance{background:var(--surface); border:1px solid var(--hairline); border-radius:12px; padding:20px 26px;}
   .prov-row{display:flex; gap:16px; padding:11px 0; border-top:1px solid var(--hairline); font-size:15px;}
   .prov-row:first-child{border-top:0;}
-  .prov-row .pk{font-family:var(--mono); font-size:11.5px; letter-spacing:.1em; text-transform:uppercase; color:var(--cyan); min-width:70px; padding-top:2px;}
+  .prov-row .pk{font-family:var(--mono); font-size:11.5px; letter-spacing:.08em; text-transform:uppercase; color:var(--cyan); min-width:70px; padding-top:2px;}
   .prov-row .pv{color:var(--ink-2);}
-  .cohort-chips{display:flex; gap:8px; flex-wrap:wrap; margin-top:18px;}
+  .cohort-chips{display:flex; gap:8px; flex-wrap:wrap; margin-top:16px;}
   .cchip{font-family:var(--mono); font-size:12.5px; padding:5px 12px; border-radius:8px; color:var(--ink); border:1px solid var(--c); display:flex; align-items:center; gap:8px;}
   .cchip::before{content:""; width:8px; height:8px; border-radius:50%; background:var(--c);}
-  .record{background:linear-gradient(180deg,var(--ground-2),var(--surface)); border:1px solid var(--hairline-2); border-radius:14px; padding:22px 24px; font-family:var(--mono);}
-  .rec-head{font-size:11px; letter-spacing:.13em; text-transform:uppercase; color:var(--faint); margin-bottom:16px;}
+  .record{background:var(--surface-2); border:1px solid var(--hairline-2); border-radius:12px; padding:20px 24px; font-family:var(--mono);}
+  .rec-head{font-size:11px; letter-spacing:.1em; text-transform:uppercase; color:var(--faint); margin-bottom:15px;}
   .rec-grid{display:grid; grid-template-columns:auto 1fr; gap:9px 18px; font-size:14px;}
   .rec-grid .rk{color:var(--muted);}
   .rec-grid .rv{color:var(--ink-2);}
   .rec-grid .rv.hl{color:var(--cyan); font-weight:600;}
-  .rec-note{margin-top:16px; padding-top:14px; border-top:1px dashed var(--hairline-2); font-size:12.5px; color:var(--faint);}
-  .pipeline{display:flex; flex-wrap:wrap; align-items:center; gap:9px; margin-top:22px; padding:15px 18px; background:var(--ground-2); border:1px solid var(--hairline); border-radius:12px;}
-  .pstep{font-family:var(--mono); font-size:12.5px; color:var(--ink-2); background:var(--surface); border:1px solid var(--hairline-2); padding:6px 11px; border-radius:7px;}
+  .rec-note{margin-top:15px; padding-top:14px; border-top:1px dashed var(--hairline-2); font-size:12.5px; color:var(--faint);}
+  .pipeline{display:flex; flex-wrap:wrap; align-items:center; gap:9px; margin-top:22px; padding:15px 18px; background:var(--ground-2); border:1px solid var(--hairline); border-radius:10px;}
+  .pstep{font-family:var(--mono); font-size:12.5px; color:var(--ink-2); background:var(--surface); border:1px solid var(--hairline-2); padding:6px 11px; border-radius:6px;}
   .parr{color:var(--cyan); font-family:var(--mono); font-weight:700;}
-  .build-note{font-size:15px; color:var(--muted); margin-top:16px;}
+  .build-note{font-size:14.5px; color:var(--muted); margin-top:15px;}
   .build-note .mono{color:var(--ink-2); font-size:13px; background:var(--ground-2); padding:2px 7px; border-radius:5px; border:1px solid var(--hairline);}
 
-  /* honesty */
+  /* limitations */
   .honesty{display:grid; grid-template-columns:1fr 1fr; gap:14px 34px; margin-top:8px;}
   .hrow{display:flex; gap:13px; align-items:flex-start; padding:14px 0; border-top:1px solid var(--hairline);}
-  .hrow .mk{font-family:var(--mono); color:var(--green); font-size:15px; margin-top:1px;}
+  .hrow .mk{font-family:var(--mono); color:var(--green); font-size:15px; margin-top:1px; font-weight:700;}
   .hrow p{margin:0; font-size:15px; color:var(--ink-2);}
   .hrow p b{color:var(--ink);}
 
   /* footer */
-  footer{padding:72px 0 90px; border-top:1px solid var(--hairline); margin-top:40px;}
-  .foot-cta{font-size:clamp(24px,3.6vw,34px); font-weight:800; letter-spacing:-.03em; max-width:20ch;
-    line-height:1.1;}
-  .foot-links{display:flex; gap:26px; flex-wrap:wrap; margin-top:26px; font-family:var(--mono); font-size:14px;}
+  footer{padding:64px 0 84px; border-top:1px solid var(--hairline); margin-top:36px;}
+  .foot-cta{font-size:clamp(20px,2.8vw,26px); font-weight:700; letter-spacing:-.02em; max-width:28ch;
+    line-height:1.15; color:var(--ink);}
+  .foot-links{display:flex; gap:26px; flex-wrap:wrap; margin-top:24px; font-family:var(--mono); font-size:14px;}
   .foot-links a{display:flex; gap:8px; align-items:center;}
-  .disclaimer{color:var(--faint); font-size:13px; margin-top:40px; max-width:70ch; line-height:1.55;}
-  .aikym-mark{display:flex; align-items:center; gap:11px; margin-bottom:22px;}
+  .disclaimer{color:var(--faint); font-size:13px; margin-top:38px; max-width:72ch; line-height:1.55;}
+  .aikym-mark{display:flex; align-items:center; gap:11px; margin-bottom:20px;}
   .aikym-glyph{color:var(--cyan); font-size:20px; transform:translateY(1px);}
-  .aikym-name{font-size:20px; font-weight:800; letter-spacing:.02em; color:var(--ink);}
-  .aikym-inc{color:var(--muted); font-weight:500; letter-spacing:.04em;}
+  .aikym-name{font-size:20px; font-weight:800; letter-spacing:.01em; color:var(--ink);}
+  .aikym-inc{color:var(--muted); font-weight:500; letter-spacing:.03em;}
 
   @media (max-width:820px){
     .stats{grid-template-columns:1fr 1fr;}
@@ -211,10 +203,10 @@
     .results-grid{grid-template-columns:1fr;}
     .honesty{grid-template-columns:1fr;}
     .data-panel{grid-template-columns:1fr;}
-    .hero{padding-top:64px;}
+    .hero{padding-top:60px;}
   }
   /* reveal */
-  .reveal{opacity:0; transform:translateY(18px); transition:opacity .7s ease, transform .7s ease;}
+  .reveal{opacity:0; transform:translateY(16px); transition:opacity .6s ease, transform .6s ease;}
   .reveal.in{opacity:1; transform:none;}
   @media (prefers-reduced-motion:reduce){
     .reveal{opacity:1 !important; transform:none !important; transition:none;}
@@ -227,47 +219,47 @@
   <!-- ============ HERO ============ -->
   <header class="hero">
     <div class="col">
-      <div class="eyebrow">Computational Oncology · Case Study</div>
+      <div class="eyebrow">Cancer genomics · reproducible ML workflow</div>
       <h1>Muta<span class="glow">Trace</span></h1>
-      <div class="lede">Tracing a tumour to its source by reading its mutational fingerprint.</div>
-      <p class="sub">When a cancer is found but its origin is not, treatment stalls. MutaTrace infers a tumour's tissue of origin from its somatic mutations alone — no imaging, no histology — at 90% accuracy across breast, lung, and colorectal cancer.</p>
+      <div class="lede">Multiclass tissue-of-origin classification from somatic mutation profiles.</div>
+      <p class="sub">A reproducible workflow that assigns a tumour to its tissue of origin — breast, lung, or colorectal — from its somatic mutation profile alone (no imaging, no histology). 90.0% accuracy under 5-fold stratified cross-validation, on 2,098 TCGA patients.</p>
 
       <div class="barcode-shell">
         <div class="barcode-tags"><span>C&gt;A</span><span>C&gt;G</span><span>C&gt;T</span><span>T&gt;A</span><span>T&gt;C</span><span>T&gt;G</span></div>
         <div class="barcode" id="barcode" aria-hidden="true"></div>
-        <div class="barcode-cap">Live SBS-96 spectrum — the real mutational fingerprint of <b>breast carcinoma</b> (TCGA, n≈8,000 substitutions)</div>
+        <div class="barcode-cap">Observed SBS-96 spectrum — <b>breast carcinoma</b>, TCGA (n≈8,000 SNVs). Bars coloured by substitution class.</div>
       </div>
 
       <div class="stats">
-        <div class="stat"><div class="n tnum">90.0<span class="u">%</span></div><div class="k">Tissue-of-origin accuracy</div></div>
-        <div class="stat"><div class="n tnum">2,098</div><div class="k">Real TCGA patients</div></div>
+        <div class="stat"><div class="n tnum">90.0<span class="u">%</span></div><div class="k">Accuracy · 5-fold CV</div></div>
+        <div class="stat"><div class="n tnum">2,098</div><div class="k">TCGA patients</div></div>
         <div class="stat"><div class="n tnum">450k</div><div class="k">Somatic mutations</div></div>
-        <div class="stat"><div class="n tnum">3</div><div class="k">Tissues · extensible to 33</div></div>
+        <div class="stat"><div class="n tnum">187</div><div class="k">Features per patient</div></div>
       </div>
     </div>
   </header>
 
-  <!-- ============ PROBLEM ============ -->
+  <!-- ============ BACKGROUND ============ -->
   <section class="reveal">
     <div class="col">
-      <div class="kicker"><span class="bar"></span><span class="eyebrow">The problem</span></div>
+      <div class="kicker"><span class="bar"></span><span class="eyebrow">Background</span></div>
       <div class="problem">
-        <div class="big">In <em>3–5%</em> of metastatic cancers, the tumour is found but its primary site cannot be identified.</div>
-        <p style="margin:0; font-size:17px;">This is Cancer of Unknown Primary (CUP). Because nearly every therapy is chosen by tissue of origin, these patients are treated half-blind — and CUP carries among the worst outcomes in oncology. The one datum always in hand is the tumour's DNA. MutaTrace turns that DNA into an answer.</p>
+        <div class="big">In <em>3–5%</em> of metastatic cancers, the primary site cannot be identified.</div>
+        <p style="margin:0; font-size:16.5px;">This is Cancer of Unknown Primary (CUP). Treatment is largely selected by tissue of origin, so these cases are hard to manage and carry poor outcomes. The somatic mutation profile is one signal almost always available. MutaTrace frames tissue-of-origin as a supervised classification problem: mutation profile → tissue label.</p>
       </div>
     </div>
   </section>
 
-  <!-- ============ INPUT DATA ============ -->
+  <!-- ============ DATA ============ -->
   <section class="reveal">
     <div class="col">
-      <div class="kicker"><span class="bar"></span><span class="eyebrow">The input data</span></div>
-      <h2>Real tumours. Public data. Every figure traces to a mutation call.</h2>
-      <p class="lead">The substrate is the TCGA PanCancer Atlas — de-identified whole-exome somatic mutations from real patient tumours, pulled live from the cBioPortal public API. Nothing here is simulated.</p>
+      <div class="kicker"><span class="bar"></span><span class="eyebrow">Data</span></div>
+      <h2>Whole-exome somatic mutation calls from real tumours.</h2>
+      <p class="lead">Input is the TCGA PanCancer Atlas, pulled from the cBioPortal public API — de-identified whole-exome somatic mutation calls. No simulated data.</p>
 
       <div class="data-panel">
         <div class="provenance">
-          <div class="prov-row"><span class="pk">Source</span><span class="pv">TCGA PanCancer Atlas 2018, via the cBioPortal public REST API</span></div>
+          <div class="prov-row"><span class="pk">Source</span><span class="pv">TCGA PanCancer Atlas 2018, via the cBioPortal REST API</span></div>
           <div class="prov-row"><span class="pk">Assay</span><span class="pv">Whole-exome somatic mutation calls (MAF-format variants)</span></div>
           <div class="prov-row"><span class="pk">Build</span><span class="pv">GRCh37 — trinucleotide context fetched from Ensembl</span></div>
           <div class="prov-row"><span class="pk">Scale</span><span class="pv tnum">2,098 patients · 450,107 somatic mutations</span></div>
@@ -288,7 +280,7 @@
             <span class="rk">protein</span><span class="rv hl">G12C</span>
             <span class="rk">label</span><span class="rv">Lung · LUAD</span>
           </div>
-          <div class="rec-note">≈ 215 such records per patient → one 187-feature profile</div>
+          <div class="rec-note">≈ 215 such records per patient → one 187-feature vector</div>
         </div>
       </div>
 
@@ -299,37 +291,37 @@
         <span class="pstep">XGBoost</span><span class="parr">→</span>
         <span class="pstep">SHAP + GPT-4o</span>
       </div>
-      <p class="build-note">Every figure on this page is produced by a numbered script in the public repo, from that one API — reproducible end-to-end with <span class="mono">python scripts/01…08</span>.</p>
+      <p class="build-note">Every figure is produced by a numbered script in the repo from this one API — reproducible end-to-end with <span class="mono">python scripts/01…08</span>.</p>
     </div>
   </section>
 
-  <!-- ============ APPROACH ============ -->
+  <!-- ============ METHODS ============ -->
   <section class="reveal">
     <div class="col">
-      <div class="kicker"><span class="bar"></span><span class="eyebrow">The method — three layers of forensic evidence</span></div>
-      <h2>Every cancer records its own history in its genome.</h2>
-      <p class="lead">MutaTrace reads that record on three independent axes, then fuses them into one prediction per patient.</p>
+      <div class="kicker"><span class="bar"></span><span class="eyebrow">Methods</span></div>
+      <h2>Three feature families, fused per patient.</h2>
+      <p class="lead">Each patient is encoded as a 187-dimensional feature vector from three independent signal sources, then classified with gradient-boosted trees (XGBoost).</p>
       <div class="layers">
         <div class="layer l1">
-          <div class="tag">Evidence I · what broke</div>
+          <div class="tag">01 · gene matrix</div>
           <h3>Driver architecture</h3>
-          <p>Which cancer genes are mutated. Each tissue carries its own driver signature — the strongest single discriminator.</p>
+          <p>Binary mutation status across the top 150 recurrently-mutated genes. Each tissue has a characteristic driver set — the strongest single signal.</p>
           <div class="chip-row">
             <span class="gchip">APC → colon</span><span class="gchip">PIK3CA → breast</span><span class="gchip">EGFR → lung</span>
           </div>
         </div>
         <div class="layer l2">
-          <div class="tag">Evidence II · what caused it</div>
+          <div class="tag">02 · SBS-96</div>
           <h3>Mutational signatures</h3>
-          <p>The trinucleotide context of every point mutation encodes its cause — tobacco, APOBEC, an ageing clock — as the SBS-96 barcode.</p>
+          <p>Trinucleotide context of each SNV, summarised as the 96-channel substitution spectrum — encodes the mutational process (tobacco, APOBEC, ageing).</p>
           <div class="chip-row">
             <span class="gchip">C&gt;A = tobacco</span><span class="gchip">CpG C&gt;T = ageing</span>
           </div>
         </div>
         <div class="layer l3">
-          <div class="tag">Evidence III · sequence context</div>
-          <h3>Genomic foundation model</h3>
-          <p>DNABERT encodes 129&nbsp;bp around each driver mutation, capturing local sequence grammar that gene names and signatures miss.</p>
+          <div class="tag">03 · DNABERT</div>
+          <h3>Sequence context</h3>
+          <p>129 bp around each driver mutation embedded with DNABERT (768-d), reduced to 20 PCs — local sequence context beyond gene identity.</p>
           <div class="chip-row">
             <span class="gchip">DNABERT · 768-d</span><span class="gchip">PCA → 20</span>
           </div>
@@ -338,35 +330,35 @@
     </div>
   </section>
 
-  <!-- ============ EVIDENCE PLATES ============ -->
+  <!-- ============ FIGURES ============ -->
   <section class="reveal">
     <div class="col wide">
-      <div class="kicker"><span class="bar"></span><span class="eyebrow">The evidence</span></div>
+      <div class="kicker"><span class="bar"></span><span class="eyebrow">Figures</span></div>
 
       <div class="plate-block">
         <figure>
-          <div class="plate"><span class="specimen">Plate 01 · Driver architecture</span>
+          <div class="plate"><span class="specimen">Fig. 1 · Oncoprint</span>
             <img src="results/figures/oncoprint.png" alt="Oncoprint of driver-gene mutations across 2,098 tumours"/>
           </div>
-          <figcaption><b>Oncoprint, 2,098 tumours.</b> Each column a patient, each row a driver gene. The black APC block in colorectal, PIK3CA in breast, and EGFR/STK11 in lung are the tissue signatures the classifier exploits. TTN/MUC16 deliberately excluded as long-gene artefacts.</figcaption>
+          <figcaption><b>Oncoprint, 2,098 tumours.</b> Each column a patient, each row a driver gene. The black APC block in colorectal, PIK3CA in breast, and EGFR/STK11 in lung are the tissue-specific driver sets the classifier exploits. TTN/MUC16 excluded as long-gene artefacts.</figcaption>
         </figure>
       </div>
 
       <div class="plate-block">
         <figure>
-          <div class="plate"><span class="specimen">Plate 02 · Mutational fingerprint</span>
+          <div class="plate"><span class="specimen">Fig. 2 · SBS-96 spectra</span>
             <img src="results/figures/mutational_signatures.png" alt="SBS-96 mutational signature spectra per cancer type"/>
           </div>
-          <figcaption><b>SBS-96 spectra.</b> Lung's towering C&gt;A block is the tobacco signature (SBS4); colorectal's C&gt;T peaks are the ageing/CpG clock (SBS1); breast carries an APOBEC pattern. Trinucleotide context fetched live from Ensembl GRCh37.</figcaption>
+          <figcaption><b>SBS-96 spectra by tissue.</b> Lung's C&gt;A block is the tobacco signature (SBS4); colorectal's C&gt;T peaks are the ageing/CpG clock (SBS1); breast shows an APOBEC pattern. Trinucleotide context fetched from Ensembl GRCh37.</figcaption>
         </figure>
       </div>
 
       <div class="plate-block">
         <figure>
-          <div class="plate"><span class="specimen">Plate 03 · Tumor GPS</span>
-            <img src="results/figures/tumor_gps_cards.png" alt="Tumor GPS cards inferring tissue of origin for three patients"/>
+          <div class="plate"><span class="specimen">Fig. 3 · Per-patient inference</span>
+            <img src="results/figures/tumor_gps_cards.png" alt="Per-patient tissue-of-origin inference for three patients"/>
           </div>
-          <figcaption><b>The CUP inference, simulated.</b> Primary site withheld; only mutations given. Two confident calls, and one honest hard case (right) — the model hedges 55/45 and narrowly misses, while the GPT-4o layer flags the BRCA1 truncation it under-weighted. Probabilities are leak-free (out-of-fold).</figcaption>
+          <figcaption><b>Held-out (out-of-fold) predictions.</b> Tissue-of-origin probabilities for three patients, primary site withheld. Two confident calls; one hard case (right) where the classifier hedges 55/45 and narrowly misses, while the GPT-4o layer flags the BRCA1 truncation the tabular model under-weighted.</figcaption>
         </figure>
       </div>
     </div>
@@ -375,14 +367,14 @@
   <!-- ============ RESULTS ============ -->
   <section class="reveal">
     <div class="col">
-      <div class="kicker"><span class="bar"></span><span class="eyebrow">The result</span></div>
-      <h2>90% accuracy, from mutations alone.</h2>
-      <p class="lead">Five-fold stratified cross-validation on 2,098 patients. The signal in somatic mutations is strong enough to place a tumour to its tissue without any clinical, imaging, or expression data.</p>
-      <div class="results-grid" style="margin-top:26px;">
+      <div class="kicker"><span class="bar"></span><span class="eyebrow">Results</span></div>
+      <h2>90.0% accuracy under 5-fold cross-validation.</h2>
+      <p class="lead">Stratified 5-fold CV on 2,098 patients. Somatic mutations alone place a tumour to tissue without clinical, imaging, or expression data.</p>
+      <div class="results-grid" style="margin-top:24px;">
         <div class="metric-tiles">
           <div class="headline-metric">
             <div class="n tnum">90.0<span class="u">%</span></div>
-            <div class="k">overall tissue-of-origin accuracy · macro-F1 89.7%</div>
+            <div class="k">overall accuracy · macro-F1 89.7%</div>
             <div class="base">random baseline 33% · majority-class baseline 48%</div>
           </div>
           <div class="mtile">
@@ -395,51 +387,51 @@
           </div>
           <div class="mtile" style="grid-column:1 / -1;">
             <div class="lab"><span class="dot" style="background:var(--colon)"></span>Colorectal · COAD</div>
-            <div class="f1 tnum">0.93</div><div class="pr tnum">P 0.94 · R 0.92 · n=528 — the cleanest call, driven by APC truncation + high burden</div>
+            <div class="f1 tnum">0.93</div><div class="pr tnum">P 0.94 · R 0.92 · n=528 — cleanest class; APC truncation + high burden</div>
           </div>
         </div>
         <div>
           <figure>
-            <div class="plate" style="padding:14px;"><span class="specimen" style="background:var(--colon)">Confusion · 5-fold CV</span>
+            <div class="plate" style="padding:12px;"><span class="specimen" style="background:var(--colon)">Confusion · 5-fold CV</span>
               <img src="results/figures/confusion_matrix.png" alt="Confusion matrix of tissue-of-origin predictions"/>
             </div>
-            <figcaption>Lung's lower recall traces to its heterogeneity — EGFR-mutant, KRAS-mutant, and driver-wildtype subgroups, the last of which is genuinely hard from mutations alone.</figcaption>
+            <figcaption>Lung's lower recall reflects its heterogeneity — EGFR-mutant, KRAS-mutant, and driver-wildtype subgroups; the last is genuinely hard from mutations alone.</figcaption>
           </figure>
         </div>
       </div>
     </div>
   </section>
 
-  <!-- ============ METHOD STACK ============ -->
+  <!-- ============ IMPLEMENTATION ============ -->
   <section class="reveal">
     <div class="col">
-      <div class="kicker"><span class="bar"></span><span class="eyebrow">Built with</span></div>
+      <div class="kicker"><span class="bar"></span><span class="eyebrow">Implementation</span></div>
       <div class="methods">
         <div class="method"><span class="m-k">Data</span><span class="m-v">cBioPortal API · TCGA PanCancer Atlas</span></div>
         <div class="method"><span class="m-k">Sequence</span><span class="m-v">Ensembl GRCh37 REST</span></div>
         <div class="method"><span class="m-k">Foundation model</span><span class="m-v">DNABERT (6-mer, 768-d)</span></div>
         <div class="method"><span class="m-k">Classifier</span><span class="m-v">XGBoost · 300 trees</span></div>
         <div class="method"><span class="m-k">Explainability</span><span class="m-v">SHAP · UMAP</span></div>
-        <div class="method"><span class="m-k">Reasoning</span><span class="m-v">GPT-4o · LangGraph agent</span></div>
-        <div class="method"><span class="m-k">Features</span><span class="m-v">187 · gene matrix + TMB + SBS + DNA-PCs</span></div>
+        <div class="method"><span class="m-k">Reasoning</span><span class="m-v">GPT-4o · LangGraph</span></div>
+        <div class="method"><span class="m-k">Features</span><span class="m-v">187 · genes + TMB + SBS + DNA-PCs</span></div>
         <div class="method"><span class="m-k">Validation</span><span class="m-v">5-fold stratified CV</span></div>
       </div>
     </div>
   </section>
 
-  <!-- ============ HONESTY ============ -->
+  <!-- ============ LIMITATIONS ============ -->
   <section class="reveal">
     <div class="col">
-      <div class="kicker"><span class="bar"></span><span class="eyebrow">Rigour &amp; honest limits</span></div>
-      <h2>What makes it trustworthy — and where it stops.</h2>
-      <p class="lead">Cancer tissue-of-origin classification is a well-established problem with a body of prior work. MutaTrace makes no novelty claim — its value is a clean, interpretable, fully reproducible end-to-end build on public data, not a new method.</p>
+      <div class="kicker"><span class="bar"></span><span class="eyebrow">Limitations &amp; honesty</span></div>
+      <h2>What it is — and what it is not.</h2>
+      <p class="lead">Tissue-of-origin classification is a well-established problem with substantial prior work. MutaTrace makes no novelty claim — its value is a clean, interpretable, fully reproducible end-to-end build on public data, not a new method.</p>
       <div class="honesty">
-        <div class="hrow"><span class="mk">✓</span><p><b>No leakage in the demo.</b> Tumor GPS probabilities are out-of-fold — each patient scored by a model that never trained on them.</p></div>
+        <div class="hrow"><span class="mk">✓</span><p><b>No leakage in the demo.</b> Per-patient probabilities are out-of-fold — each patient scored by a model that never trained on them.</p></div>
         <div class="hrow"><span class="mk">✓</span><p><b>Curated drivers.</b> TTN and MUC16 excluded — long genes that masquerade as drivers by mutation count.</p></div>
-        <div class="hrow"><span class="mk">✓</span><p><b>Interpretable by construction.</b> SHAP attributes every call to genes and signatures; GPT-4o writes the clinical rationale.</p></div>
+        <div class="hrow"><span class="mk">✓</span><p><b>Interpretable by construction.</b> SHAP attributes each call to genes and signatures; GPT-4o writes the rationale.</p></div>
         <div class="hrow"><span class="mk">✓</span><p><b>Real patient tumours.</b> TCGA PanCancer Atlas, de-identified and public — not simulated data.</p></div>
         <div class="hrow"><span class="mk">→</span><p><b>Three tissues, not thirty-three.</b> A proof of concept; the architecture is class-agnostic and extends to the full TCGA panel.</p></div>
-        <div class="hrow"><span class="mk">→</span><p><b>Mutations only.</b> Adding copy-number, expression, and methylation — and an independent hold-out cohort — is the path to clinical grade.</p></div>
+        <div class="hrow"><span class="mk">→</span><p><b>Mutations only.</b> Adding copy-number, expression, and methylation — plus an independent hold-out cohort — is the path to clinical grade.</p></div>
       </div>
     </div>
   </section>
@@ -451,10 +443,10 @@
         <span class="aikym-glyph">◇</span>
         <span class="aikym-name">Aikyam<span class="aikym-inc">&nbsp;AI Labs</span></span>
       </div>
-      <div class="foot-cta">Computational biology, built to a scientific standard.</div>
-      <p style="color:var(--muted); max-width:60ch; margin-top:16px;">Aikyam AI Labs works at the intersection of computational biology and AI — cancer genomics, ML &amp; genomic foundation models, drug discovery, and protein science. MutaTrace is one case study: real data, interpretable models, honest limits.</p>
+      <div class="foot-cta">Applied machine learning for genomics and drug discovery.</div>
+      <p style="color:var(--muted); max-width:62ch; margin-top:16px;">Aikyam AI Labs works at the intersection of computational biology and AI — cancer genomics, ML &amp; genomic foundation models, drug discovery, and protein science. MutaTrace is one case study: real data, interpretable models, honest limits.</p>
       <div class="foot-links">
-        <a href="https://github.com/shilpasy/mutatrace">↳ code &amp; full write-up on GitHub</a>
+        <a href="https://github.com/shilpasy/mutatrace">↳ code &amp; write-up on GitHub</a>
         <a href="mailto:inquiry@aikyam.ca">✉ inquiry@aikyam.ca</a>
       </div>
       <p class="disclaimer">Data: TCGA PanCancer Atlas 2018 via the cBioPortal public API; all patient data de-identified and publicly available. MutaTrace is a research demonstration by Aikyam AI Labs Inc., not a validated clinical device. No proprietary tools or patient identifiers were used.</p>
@@ -464,9 +456,9 @@
 </div>
 
 <script>
-  // Real breast-carcinoma SBS-96 spectrum (fraction of SNVs per trinucleotide channel)
+  // Observed breast-carcinoma SBS-96 spectrum (fraction of SNVs per trinucleotide channel)
   const BRCA=[0.0077,0.0120,0.0030,0.0084,0.0079,0.0083,0.0045,0.0120,0.0065,0.0080,0.0024,0.0109,0.0191,0.0169,0.0036,0.0346,0.0060,0.0050,0.0027,0.0057,0.0050,0.0039,0.0034,0.0061,0.0036,0.0047,0.0018,0.0050,0.0514,0.0244,0.0070,0.0775,0.0091,0.0110,0.0405,0.0079,0.0111,0.0115,0.0350,0.0081,0.0129,0.0169,0.0411,0.0107,0.0850,0.0346,0.0711,0.0381,0.0024,0.0049,0.0037,0.0041,0.0009,0.0034,0.0032,0.0031,0.0020,0.0026,0.0019,0.0030,0.0015,0.0027,0.0014,0.0037,0.0075,0.0047,0.0111,0.0056,0.0024,0.0055,0.0074,0.0047,0.0091,0.0050,0.0067,0.0059,0.0030,0.0060,0.0022,0.0043,0.0010,0.0026,0.0021,0.0030,0.0009,0.0031,0.0027,0.0056,0.0015,0.0020,0.0015,0.0021,0.0016,0.0025,0.0020,0.0060];
-  const SBS=["#1EBFF0","#C8CDD6","#E62725","#6B7686","#6FCF57","#F0A6A2"]; // C>A C>G C>T T>A T>C T>G
+  const SBS=["#1EBFF0","#1A1A1A","#E62725","#7E8894","#4FB03A","#E0968F"]; // C>A C>G C>T T>A T>C T>G
   const bc=document.getElementById("barcode");
   const mx=Math.max.apply(null,BRCA);
   const reduce=window.matchMedia("(prefers-reduced-motion:reduce)").matches;
